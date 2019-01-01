@@ -15,5 +15,8 @@
   "bugs": {
     "url": "https://github.com/Blisston/Pi-Face/issues"
   },
-  "homepage": "https://github.com/Blisston/Pi-Face#readme"
+  "homepage": "https://github.com/Blisston/Pi-Face#readme",
+  "dependencies": {
+    "express": "^4.16.4"
+  }
 }
