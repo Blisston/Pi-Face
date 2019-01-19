@@ -6,7 +6,7 @@ const user = require("./models/userSchema");
 const saved = require("./models/savedFaceSchema");
 var fs = require("fs");
 var request = require("request");
-
+const image2base64 = require("image-to-base64");
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
     cb(null, "./uploads/");
@@ -34,45 +34,44 @@ router.get("/", (req, res, next) => {
   //     }).catch(err =>
   //         {
   //         })
-    saved
-      .find()
-      .select("name")
-      .exec()
-      .then(doc => {
-        res.status(200).json(doc);
-      });
-//   const po = new saved({
-//     _id: new mong.Types.ObjectId(),
-//     name: "blisston",
-//     photo:"7601.jpg"
-//   });
-//   po.save().then(
-//     res => {
-//       console.log(res);
-//     },
-//     err => {
-//       console.log(err);
-//     }
-//   );
+  user
+    .find()
+    .select("name photo base64Format")
+    .exec()
+    .then(doc => {
+    
+
+      res.status(200).json(doc);
+    });
+  //   const po = new saved({
+  //     _id: new mong.Types.ObjectId(),
+  //     name: "blisston",
+  //     photo:"7601.jpg"
+  //   });
+  //   po.save().then(
+  //     res => {
+  //       console.log(res);
+  //     },
+  //     err => {
+  //       console.log(err);
+  //     }
+  //   );
 });
 
 router.post("/", upload.single("media"), function(req, res, next) {
   let img1;
-
-  const po = new user({
-    _id: new mong.Types.ObjectId(),
-    name: req.file.filename
-  });
+  let nameOfPerson = "unknown";
+  let base64Img;
 
   let fet = () => {
     return new Promise((res, rej) => {
       res(
         user
           .find()
-          .select("name")
+          .select("photo")
           .exec()
           .then(doc => {
-            img1 = doc[doc.length - 1].name;
+            img1 = doc[doc.length - 1].photo;
             console.log(img1);
           })
       );
@@ -153,8 +152,52 @@ router.post("/", upload.single("media"), function(req, res, next) {
 
                     request(options, function(error, response, body) {
                       if (error) throw new Error(error);
+                      console.log("uploads/" + req.file.filename);
+                   
                       if (JSON.parse(body).confidence > 70) {
-                        console.log(i.name);
+                        image2base64("uploads/" + req.file.filename).then(
+                          response => {
+                            base64Img = response;
+                       
+                        nameOfPerson = i.name;
+                        const po = new user({
+                          _id: new mong.Types.ObjectId(),
+                          name: nameOfPerson,
+                          photo: req.file.filename,
+                          base64Format: base64Img
+                        });
+
+                        po.save().then(
+                          res => {
+                            console.log(res);
+                          },
+                          err => {
+                            console.log(err);
+                          }
+                        );   }
+                        );
+                      } else {
+                        image2base64("uploads/" + req.file.filename).then(
+                          response => {
+                            base64Img = response;
+                         
+                        const po = new user({
+                          _id: new mong.Types.ObjectId(),
+                          name: nameOfPerson,
+                          photo: req.file.filename,
+                          base64Format: base64Img
+                        });
+
+                        po.save().then(
+                          res => {
+                            console.log(res);
+                          },
+                          err => {
+                            console.log(err);
+                          }
+                        );
+                      }
+                      );
                       }
                     });
                   });
@@ -163,14 +206,6 @@ router.post("/", upload.single("media"), function(req, res, next) {
           });
         };
         userGet().then(() => {});
-        po.save().then(
-          res => {
-            console.log(res);
-          },
-          err => {
-            console.log(err);
-          }
-        );
       } else {
         fs.unlink("uploads/" + req.file.filename);
       }
