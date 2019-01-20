@@ -3,7 +3,8 @@ const saved = mongoose.Schema(
     {
         _id:mongoose.Schema.Types.ObjectId,
         name:String,
-        photo:String
+        photo:String,
+        base64Format: String
         
     }
 );

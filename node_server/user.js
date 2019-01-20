@@ -7,6 +7,8 @@ const saved = require("./models/savedFaceSchema");
 var fs = require("fs");
 var request = require("request");
 const image2base64 = require("image-to-base64");
+const twilio = require("twilio");
+
 const storage = multer.diskStorage({
   destination: function(req, file, cb) {
     cb(null, "./uploads/");
@@ -27,35 +29,13 @@ const upload = multer({
 });
 
 router.get("/", (req, res, next) => {
-  // user.findById('5c209443b43e6e195c4e9988').exec().then(doc =>
-  //     {
-  //         console.log(doc);
-  //         res.status(200).json(doc);
-  //     }).catch(err =>
-  //         {
-  //         })
   user
     .find()
     .select("name photo base64Format")
     .exec()
     .then(doc => {
-    
-
       res.status(200).json(doc);
     });
-  //   const po = new saved({
-  //     _id: new mong.Types.ObjectId(),
-  //     name: "blisston",
-  //     photo:"7601.jpg"
-  //   });
-  //   po.save().then(
-  //     res => {
-  //       console.log(res);
-  //     },
-  //     err => {
-  //       console.log(err);
-  //     }
-  //   );
 });
 
 router.post("/", upload.single("media"), function(req, res, next) {
@@ -153,51 +133,52 @@ router.post("/", upload.single("media"), function(req, res, next) {
                     request(options, function(error, response, body) {
                       if (error) throw new Error(error);
                       console.log("uploads/" + req.file.filename);
-                   
+
                       if (JSON.parse(body).confidence > 70) {
                         image2base64("uploads/" + req.file.filename).then(
                           response => {
                             base64Img = response;
-                       
-                        nameOfPerson = i.name;
-                        const po = new user({
-                          _id: new mong.Types.ObjectId(),
-                          name: nameOfPerson,
-                          photo: req.file.filename,
-                          base64Format: base64Img
-                        });
 
-                        po.save().then(
-                          res => {
-                            console.log(res);
-                          },
-                          err => {
-                            console.log(err);
+                            nameOfPerson = i.name;
+                            const po = new user({
+                              _id: new mong.Types.ObjectId(),
+                              name: nameOfPerson,
+                              photo: req.file.filename,
+                              base64Format: base64Img
+                            });
+                            sendMessage(nameOfPerson);
+                            po.save().then(
+                              res => {
+                                console.log("known");
+                              },
+                              err => {
+                                console.log(err);
+                              }
+                            );
                           }
-                        );   }
                         );
                       } else {
                         image2base64("uploads/" + req.file.filename).then(
                           response => {
                             base64Img = response;
-                         
-                        const po = new user({
-                          _id: new mong.Types.ObjectId(),
-                          name: nameOfPerson,
-                          photo: req.file.filename,
-                          base64Format: base64Img
-                        });
 
-                        po.save().then(
-                          res => {
-                            console.log(res);
-                          },
-                          err => {
-                            console.log(err);
+                            const po = new user({
+                              _id: new mong.Types.ObjectId(),
+                              name: nameOfPerson,
+                              photo: req.file.filename,
+                              base64Format: base64Img
+                            });
+
+                            po.save().then(
+                              res => {
+                                console.log("unkonwn");
+                              },
+                              err => {
+                                console.log(err);
+                              }
+                            );
                           }
                         );
-                      }
-                      );
                       }
                     });
                   });
@@ -210,6 +191,25 @@ router.post("/", upload.single("media"), function(req, res, next) {
         fs.unlink("uploads/" + req.file.filename);
       }
     });
+    function sendMessage(x) {
+      let client = new twilio(
+        "AC5e59fdbd81d2373e4192b67b306045cf",
+        "48d93d5e745ed99762dc41b8a94d56ec"
+      );
+
+      client.messages.create(
+        {
+          to: "+918667084511",
+          from: "+12243007624",
+          body: "At door  " + x
+        },
+        (err, res) => {
+          if (err) console.log(`An error has ocurred: ${err}`);
+          else
+            console.log(`¡SMS Success! Date:${res.dateCreated} Id: ${res.sid}`);
+        }
+      );
+    }
   });
   res.send("hi");
 });

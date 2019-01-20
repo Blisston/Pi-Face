@@ -3,6 +3,8 @@ import { NgModule } from '@angular/core';
 
 import { AppComponent } from './app.component';
 import { FeedComponent } from './feed/feed.component';
+import { DetailsService} from './details.service';
+import {HttpModule} from '@angular/http';
 
 @NgModule({
   declarations: [
@@ -10,9 +12,10 @@ import { FeedComponent } from './feed/feed.component';
     FeedComponent
   ],
   imports: [
-    BrowserModule
+    BrowserModule,
+    HttpModule
   ],
-  providers: [],
+  providers: [DetailsService],
   bootstrap: [AppComponent]
 })
 export class AppModule { }

@@ -1,0 +1,11 @@
+<div>
+  <div *ngFor="let people of peoples">
+    <img src="data:image/png;base64,{{people.base64Format}}"/>
+  </div>
+  <div *ngFor="let people of savedPeople">
+    <img src="data:image/png;base64,{{people.base64Format}}"/>
+  </div>
+</div>
+<input type="file" (change)="onFileChanged($event)">
+<button (click)="onUpload()">Upload!</button>
+
