@@ -1,11 +1,46 @@
+<div class="row">
+<div class="col s2">
+    <table  class="highlight centered">
+    
+
+    <tbody>
+      <tr>
+        <td><a (click)="showPeople()">At Door</a></td>
+  
+
+      </tr>
+      <tr>
+        <td><a (click)="showSaved()">Saved </a></td>
+        
+
+      </tr>
+      <tr>
+        <td><a (click)="addPeople()">Add people</a></td>
+      
+
+      </tr>
+    </tbody>
+  </table>
+
+
+</div>
+
+<div class="col s10">
 <div>
+<div *ngIf="door">
   <div *ngFor="let people of peoples">
     <img src="data:image/png;base64,{{people.base64Format}}"/>
   </div>
+</div>
+<div *ngIf="saved">
   <div *ngFor="let people of savedPeople">
-    <img src="data:image/png;base64,{{people.base64Format}}"/>
+    <img src="data:image/png;base64,{{people.base64Format}}" height="200px">
   </div>
 </div>
+<div *ngIf="add">
 <input type="file" (change)="onFileChanged($event)">
 <button (click)="onUpload()">Upload!</button>
 
+</div>
+</div>
+</div>

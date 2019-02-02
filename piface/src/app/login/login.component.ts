@@ -1,4 +1,5 @@
 import { Component, OnInit } from '@angular/core';
+import {Router} from '@angular/router';
 
 @Component({
   selector: 'app-login',
@@ -7,9 +8,14 @@ import { Component, OnInit } from '@angular/core';
 })
 export class LoginComponent implements OnInit {
 
-  constructor() { }
+  constructor( private router: Router) { }
 
   ngOnInit() {
   }
-
+onSubmit(x) {
+  console.log(x.value.user);
+  if(x.value.user=='Blisston' && x.value.password=='india'){
+    this.router.navigate(['feed']);
+  }
+}
 }

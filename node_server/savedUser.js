@@ -51,10 +51,10 @@ router.post("/", upload.single("media"), function(req, res, next) {
 
       po.save().then(
         res => {
-          //console.log(res);
+          console.log(res);
         },
         err => {
-          //console.log(err);
+          console.log(err);
         }
       ); 
 }); });

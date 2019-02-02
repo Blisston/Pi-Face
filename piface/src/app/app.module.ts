@@ -7,6 +7,13 @@ import { DetailsService} from './details.service';
 import {HttpModule} from '@angular/http';
 import { LoginComponent } from './login/login.component';
 import { SavedComponent } from './saved/saved.component';
+import {Routes, RouterModule} from '@angular/router';
+import {FormsModule} from '@angular/forms';
+
+let routes: Routes= [
+  {path:'',redirectTo:'/login', pathMatch:'full'},
+  {path:'login',component:LoginComponent},
+{path:'feed',component:FeedComponent}]
 
 @NgModule({
   declarations: [
@@ -17,7 +24,9 @@ import { SavedComponent } from './saved/saved.component';
   ],
   imports: [
     BrowserModule,
-    HttpModule
+    HttpModule,
+    RouterModule.forRoot(routes),
+    FormsModule
   ],
   providers: [DetailsService],
   bootstrap: [AppComponent]
